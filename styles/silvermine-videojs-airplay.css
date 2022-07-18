@@ -1,0 +1,15 @@
+.vjs-airplay-button .vjs-icon-placeholder {
+    background: url("//dd7tel2830j4w.cloudfront.net/f1655321737657x373489485846121100/ic_airplay_blue_24px.svg") center center no-repeat;
+    background-size: contain;
+    display: inline-block;
+    width: 12px;
+    height: 12px
+}
+
+.vjs-airplay-button:hover {
+    cursor: pointer
+}
+
+.vjs-airplay-button:hover .vjs-icon-placeholder {
+    background-image: url("//dd7tel2830j4w.cloudfront.net/f1655321737657x373489485846121100/ic_airplay_blue_24px.svg")
+}

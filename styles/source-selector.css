@@ -1,0 +1,30 @@
+.vjs-theme-forest .vjs-http-source-selector .vjs-menu-button-popup:before{
+    font-size: 1.8em;
+    line-height: 1.55;
+}
+
+.vjs-theme-city .vjs-http-source-selector .vjs-menu-button-popup:before{
+    font-size: 1.8em;
+    line-height: 50px;
+}
+
+.vjs-theme-sea .vjs-http-source-selector .vjs-menu-button-popup:before{
+    font-size: 1.8em;
+    line-height: 2.2;
+}
+
+.vjs-theme-fantasy .vjs-http-source-selector .vjs-menu-button-popup:before{
+    font-size: 1.8em;
+    line-height: 54px;
+}
+
+.vjs-theme-sea .vjs-http-source-selector .vjs-menu-button-popup:before{
+    font-size: 1.8em;
+    line-height: 2.2;
+}
+
+.vjs-theme-dt .vjs-http-source-selector .vjs-menu-button-popup:before{
+    font-size: 2.5em;
+    line-height: 2.77em;
+}
+

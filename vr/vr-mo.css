@@ -1,0 +1,193 @@
+.video-js canvas{cursor:move}
+.video-js .vjs-button-vr .vjs-icon-placeholder{height:100%;width:30px;display:inline-block;background:url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNHB4IiBoZWlnaHQ9IjI0cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI0ZGRkZGRiI+CiAgICA8cGF0aCBkPSJNMjAuNzQgNkgzLjIxQzIuNTUgNiAyIDYuNTcgMiA3LjI4djEwLjQ0YzAgLjcuNTUgMS4yOCAxLjIzIDEuMjhoNC43OWMuNTIgMCAuOTYtLjMzIDEuMTQtLjc5bDEuNC0zLjQ4Yy4yMy0uNTkuNzktMS4wMSAxLjQ0LTEuMDFzMS4yMS40MiAxLjQ1IDEuMDFsMS4zOSAzLjQ4Yy4xOS40Ni42My43OSAxLjExLjc5aDQuNzljLjcxIDAgMS4yNi0uNTcgMS4yNi0xLjI4VjcuMjhjMC0uNy0uNTUtMS4yOC0xLjI2LTEuMjh6TTcuNSAxNC42MmMtMS4xNyAwLTIuMTMtLjk1LTIuMTMtMi4xMiAwLTEuMTcuOTYtMi4xMyAyLjEzLTIuMTMgMS4xOCAwIDIuMTIuOTYgMi4xMiAyLjEzcy0uOTUgMi4xMi0yLjEyIDIuMTJ6bTkgMGMtMS4xNyAwLTIuMTMtLjk1LTIuMTMtMi4xMiAwLTEuMTcuOTYtMi4xMyAyLjEzLTIuMTNzMi4xMi45NiAyLjEyIDIuMTMtLjk1IDIuMTItMi4xMiAyLjEyeiIvPgogICAgPHBhdGggZmlsbD0ibm9uZSIgZD0iTTAgMGgyNHYyNEgwVjB6Ii8+Cjwvc3ZnPgo=) no-repeat center center}
+.video-js .vjs-vr-nav {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    transition: background .3s ease;
+    -webkit-transition: background .3s ease;
+    -o-transition: background .3s ease;
+    -moz-transition: background .3s ease;
+}
+
+.video-js .vjs-vr-nav .vjs-dir {
+    width: 0;
+    height: 0;
+    border-style: solid;
+    position: absolute;
+    transition: background .3s ease;
+    -webkit-transition: background .3s ease;
+    -o-transition: background .3s ease;
+    -moz-transition: background .3s ease;
+    filter: drop-shadow(0px 0px 1px rgba(0,0,0,.5));
+    -webkit-filter: drop-shadow(0px 0px 1px rgba(0,0,0,.5));
+    cursor:pointer;
+}
+.video-js .vjs-vr-nav .vjs-dir-down {
+    border-width: 12px 8px 0 8px;
+    border-color:white transparent transparent transparent;
+    bottom: 5px;
+    left: 22px;
+}
+.video-js .vjs-vr-nav .vjs-dir-down:hover {
+    border-color:#fff transparent transparent transparent;
+}
+.video-js .vjs-vr-nav .vjs-dir-up {
+    border-width: 0 8px 12px 8px;
+    border-color:transparent transparent white transparent;
+    top: 5px;
+    left: 22px;
+}
+
+.video-js .vjs-vr-nav .vjs-dir-up:hover {
+    border-color:transparent transparent #fff transparent;
+}
+.video-js .vjs-vr-nav .vjs-dir-left {
+    border-width: 8px 12px 8px 0;
+    border-color: transparent white transparent transparent;
+    top: 22px;
+    left: 5px;
+}
+.video-js .vjs-vr-nav .vjs-dir-left:hover {
+    border-color: transparent #fff transparent transparent;
+}
+.video-js .vjs-vr-nav .vjs-dir-right {
+    border-width: 8px 0 8px 12px;
+    border-color: transparent transparent transparent white;
+    top: 22px;
+    right: 5px;
+}
+.video-js .vjs-vr-nav .vjs-dir-right:hover {
+    border-color: transparent transparent transparent #fff;
+}
+.video-js .vjs-vr-nav .vjs-vr-reset {
+    width: 16px;
+    height: 16px;
+    position: absolute;
+    top: 22px;
+    cursor: pointer;
+    left: 22px;
+    background: white;
+    border-radius: 50%;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    -o-border-radius: 50%;
+    -ms-border-radius: 50%;
+}
+.video-js .vjs-vr-nav .vjs-vr-reset:hover {
+    border: 2px solid #fff;
+}
+
+.video-js .vjs-vr-nav .vjs-vr-reset:before {
+    content:'';
+    width: 8px;
+    height: 8px;
+    background: white;
+    border-radius: 50%;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    -o-border-radius: 50%;
+    -ms-border-radius: 50%;
+    position:absolute;
+    top: 1px;
+    left: 1px;
+}
+.video-js .vjs-vr-nav .vjs-vr-reset:hover:before {
+    background: #fff;
+}
+
+.vjs-full-window .video-js {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    z-index: 999999999;
+    padding:0!important;
+    margin:0!important;
+}
+
+
+.video-js.vjs-using-native-controls .vjs-poster, .video-js.vjs-using-native-controls .vjs-big-play-button {
+    display: block; }
+
+.video-js .vjs-nav-reset {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    -ms-border-radius: 50%;
+    transition: background .3s ease;
+    -webkit-transition: background .3s ease;
+    -o-transition: background .3s ease;
+    -moz-transition: background .3s ease;
+    background: rgba(0,0,0,0.2);
+    cursor: pointer;
+}
+.video-js .vjs-nav-reset .vjs-circle {
+    width: 24px;
+    height: 24px;
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    border-radius: 50%;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    -ms-border-radius: 50%;
+    -o-border-radius: 50%;
+    border: 2px solid white;
+}
+
+.video-js .vjs-nav-reset .vjs-circle:before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: white;
+    border-radius: 50%;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    -o-border-radius: 50%;
+    -ms-border-radius: 50%;
+    position: absolute;
+    top: 6px;
+    left: 6px;
+}
+
+.video-js .vjs-nav-reset .vjs-hbar {
+    display: block;
+    position: absolute;
+    width: 8px;
+    height: 2px;
+    background: white;
+    top: 19px;
+}
+.vjs-nav-reset .vjs-hbar-left {
+    left: 5px;
+}
+.vjs-nav-reset .vjs-hbar-right {
+    left:27px;
+}
+.video-js .vjs-nav-reset .vjs-vbar {
+    display: block;
+    position: absolute;
+    width: 2px;
+    height: 8px;
+    background: white;
+    left: 19px;
+}
+.vjs-nav-reset .vjs-vbar-top {
+    top:5px;
+}
+.vjs-nav-reset .vjs-vbar-bot {
+    top:27px;
+}
+
+.video-js .vjs-control-bar .vjs-VR-control {
+    cursor: pointer !important;
+    line-height: 40px !important;
+    font-size: 1.3em !important
+}

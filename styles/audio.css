@@ -1,0 +1,28 @@
+.vjs-audio-only-mode.vjs-fluid {
+    padding-top: 0!important;
+}
+
+.vjs-audio-only-mode {
+    height: 3em!important;
+}
+
+.vjs-theme-city.vjs-audio-only-mode {
+    height: 70px!important;
+}
+
+.vjs-theme-fantasy.vjs-audio-only-mode {
+    height: 54px!important;
+}
+
+.vjs-theme-forest.vjs-audio-only-mode {
+    height: 5em!important;
+}
+
+.vjs-theme-sea.vjs-audio-only-mode {
+    height: 4em!important;
+}
+
+.vjs-theme-dt.vjs-audio-only-mode {
+    height: 7em!important;
+}
+

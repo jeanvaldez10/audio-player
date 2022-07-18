@@ -1,0 +1,5 @@
+function(instance, properties, context) {
+    instance.data.removeVideoTrack({ all: true });
+    instance.data.removeAudioTrack({ all: true });
+    instance.data.removeTextTrack({ all: true });
+}
