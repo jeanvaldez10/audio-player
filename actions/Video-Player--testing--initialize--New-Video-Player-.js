@@ -5,7 +5,7 @@ function(instance, context) {
     window.videojs.log.level('off');
   });
 
-  const playerId = "universal-video" + Math.floor(Math.random() * 100000001);
+  const playerId = "universal-audio" + Math.floor(Math.random() * 100000001);
   instance.data.playerId = playerId;
   instance.publishState("playerId", playerId);
 
@@ -22,140 +22,12 @@ function(instance, context) {
     return basename.slice(pos + 1); // return ext
   };
 
-  instance.data.updateTracks = () => {
-    const player = instance.data.player;
-    if (player) {
-      const audioTracks = player.audioTracks().tracks_ || [];
-      const videoTracks = player.videoTracks().tracks_ || [];
-      const textTracks = player.textTracks().tracks_ || [];
-
-      for (let i = 0; i < textTracks.length; i++) {
-        const track = textTracks[i];
-        if (track.mode === "showing") {
-          instance.publishState("text_track", track.id);
-        }
-      }
-      // search through track list and play enabled one
-      for (let i = 0; i < audioTracks.length; i++) {
-        const track = audioTracks[i];
-        let audioElement = document.getElementById(track.id);
-        if (track.enabled) {
-          audioElement?.play();
-          instance.publishState("audio_track", track.id);
-        } else {
-          audioElement?.pause();
-        }
-      }
-
-      for (let i = 0; i < videoTracks.length; i++) {
-        let track = videoTracks[i];
-
-        if (track.selected) {
-          instance.publishState("video_track", track.id);
-        }
-      }
-
-      instance.publishState(
-        "text_tracks",
-        textTracks.map((track) => track.id)
-      );
-      instance.publishState(
-        "audio_tracks",
-        audioTracks.map((track) => track.id)
-      );
-      instance.publishState(
-        "video_tracks",
-        videoTracks.map((track) => track.id)
-      );
-    }
-  };
-
-  instance.data.removeTextTrack = (properties) => {
-    let player = instance.data.player;
-    if (player) {
-      const { trackId, all } = properties;
-      // change the text track by using the label name
-      let tracks = player.textTracks();
-      let trackIds = [];
-      for (let i = 0; i < tracks.length; i++) {
-        const track = tracks[i];
-        if (all || track.id === trackId) {
-          trackIds.push(track.id);
-        }
-      }
-      for (let i = 0; i < trackIds.length; i++) {
-        const track = player.textTracks().getTrackById(trackIds[i]);
-        if (track) {
-          player.removeRemoteTextTrack(track);
-        }
-      }
-    }
-    instance.data.updateTracks();
-    instance.triggerEvent("removed_text_track");
-  };
-
-  instance.data.removeAudioTrack = (properties) => {
-    const player = instance.data.player;
-    if (player) {
-      const { trackId, all } = properties;
-      // remove track and audio element
-      const audioTrackList = player.audioTracks();
-      let trackIds = [];
-
-      for (let i = 0; i < audioTrackList.length; i++) {
-        const track = audioTrackList[i];
-        if (all || track.id === trackId) {
-          trackIds.push(track.id);
-        }
-      }
-      for (let i = 0; i < trackIds.length; i++) {
-        const track = player.audioTracks().getTrackById(trackIds[i]);
-        if (track) {
-          player.audioTracks().removeTrack(track);
-          document.getElementById(track.id).remove();
-        }
-      }
-      instance.data.updateTracks();
-      instance.triggerEvent("removed_audio_track");
-    }
-  };
-
-  instance.data.removeVideoTrack = (properties) => {
-    const player = instance.data.player;
-    if (player) {
-      const { trackId, all } = properties;
-      const videoTrackList = player.videoTracks();
-      let trackIds = [];
-
-      for (let i = 0; i < videoTrackList.length; i++) {
-        const track = videoTrackList[i];
-        if (all || track.id === trackId) {
-          trackIds.push(track.id);
-        }
-      }
-      for (let i = 0; i < trackIds.length; i++) {
-        const track = player.videoTracks().getTrackById(trackIds[i]);
-        if (track) {
-          player.videoTracks().removeTrack(track);
-        }
-      }
-      instance.data.updateTracks();
-      instance.triggerEvent("removed_video_track");
-    }
-  };
-
   instance.data.resizePlayer = function resizeVideoJS() {
     const player = instance.data.player;
-    if (!player || player.isFullscreen() || !instance.data.properties?.resizeMode) {
+    if (!player || player.isFullscreen()) {
       return;
     }
-    const aspectRatio = player.aspectRatio();
     let height = player.currentHeight();
-    const width = player.currentWidth();
-    if (aspectRatio && /^\d+\:\d+$/.test(aspectRatio) && !instance.data.properties?.audioOnlyMode) {
-      const [w, h] = aspectRatio.split(":");
-      height = (width * h) / w;
-    }
     const parent = instance.canvas.parent(".bubble-r-box");
     if (parent.length) {
       parent.css("height", height);
@@ -213,54 +85,35 @@ function(instance, context) {
 
   instance.data.updateOptions = (properties) => {
     const player = instance.data.player;
+    if (!player) {
+      return;
+    }
     let {
       muted,
       speed,
       loop,
-      controls,
       volume,
-      fluid,
-      aspectRatio,
       forcePause,
       forcePlay,
       theme,
       progressBarColor,
       barColor,
       override_style,
-      playBtnColor,
       css_skin_file,
-      audioOnlyMode,
     } =properties;
     try {
-      if (instance.data.ext === "vimeo") {
-        if (muted) {
-          player.volume(0);
-        } else {
-          player.volume(volume);
-        }
-      } else {
-        player.controls(controls);
-        player.loop(loop);
-        player.volume(volume || 0);
-        player.muted(muted);
-        player.playbackRate(speed || 1);
-      }
+      player.controls(true);
+      player.loop(loop);
+      player.volume(volume || 0);
+      player.muted(muted);
+      player.playbackRate(speed || 1);
+      player.audioOnlyMode(true);
+      player.fluid(true);
 
-      if (['vimeo', 'youtube'].includes(instance.data.media_type)) {
-        player.controls(false);
-        player.audioOnlyMode(false);
-      } else {
-        player.audioOnlyMode(audioOnlyMode);
-      }
       if (forcePause) {
         player.pause();
       } else if (forcePlay){
         player.play();
-      }
-      player.fluid(fluid);
-      if (aspectRatio) {
-        player.aspectRatio(aspectRatio);
-        instance.data.resizePlayer();
       }
     } catch (e) {
       console.log(e);
@@ -302,21 +155,6 @@ function(instance, context) {
     }
 
     if (override_style) {
-      if (playBtnColor) {
-        instance.canvas
-            .find(".vjs-big-play-button")
-            .css("background-color", playBtnColor);
-
-        instance.canvas
-            .find(".vjs-big-play-button")
-            .on("mouseenter", function () {
-              instance.canvas.find(".vjs-big-play-button").css("opacity", "1");
-            })
-            .on("mouseleave", function () {
-              instance.canvas.find(".vjs-big-play-button").css("opacity", "0.8");
-            });
-      }
-
       if (barColor) {
         instance.canvas
             .find(".vjs-control-bar")
@@ -338,42 +176,14 @@ function(instance, context) {
     }
 
     let {
-      apply_mobile_ui,
       apply_seek_button,
       apply_source_selector,
       apply_hotkeys,
       apply_ab_loop,
-      apply_share,
       apply_airplay,
       apply_vr,
     } = properties;
 
-    if (apply_mobile_ui && !player.activePlugins_?.mobileUi) {
-      let {
-        enterOnRotate,
-        exitOnRotate,
-        lockOnRotate,
-        lockToLandscapeOnEnter,
-        iOS,
-        seekSeconds,
-      } = properties;
-      player.mobileUi({
-        fullscreen: {
-          enterOnRotate,
-          exitOnRotate,
-          lockOnRotate,
-          lockToLandscapeOnEnter,
-          iOS: false,
-          disabled: false,
-        },
-        touchControls: {
-          seekSeconds,
-          tapTimeout: 300,
-          disableOnEnd: false,
-          disabled: false,
-        },
-      });
-    }
     if (apply_seek_button && !player.activePlugins_?.seekButtons) {
       const { forward, back } = properties;
       player.seekButtons({
@@ -397,42 +207,6 @@ function(instance, context) {
     }
     if (apply_ab_loop && !player.activePlugins_?.abLoopPlugin) {
       player.abLoopPlugin();
-    }
-
-    if (apply_share && !player.activePlugins_?.share) {
-      const shareOptions = {
-        socials: [
-          "fb",
-          "tw",
-          "reddit",
-          "gp",
-          "messenger",
-          "linkedin",
-          "telegram",
-          "whatsapp",
-          "facebook",
-          "viber",
-          "vk",
-          "ok",
-          "mail",
-        ],
-
-        url: window.location.href,
-        title: "Share your media",
-        description: "Share your media",
-        // required for Facebook and Messenger
-        fbAppId: properties.fbAppId,
-        // optional for Facebook
-        redirectUri: window.location.href + "#close",
-
-        // optional for VK
-        isVkParse: true,
-
-        // optinal embed code
-        embedCode: `<iframe src='${window.location.href}' width='560' height='315' frameborder='0' allowfullscreen></iframe>`,
-      };
-
-      player.share(shareOptions);
     }
 
     if (apply_airplay && !player.activePlugins_?.airPlay) {
@@ -462,16 +236,13 @@ function(instance, context) {
 
   instance.data.updateVideojs = (properties) => {
     const {
-      videoSource = "",
-      poster,
+      audioSource = "",
       mime_type,
-      use_poster_list,
     } = properties;
-    instance.data.playlist = videoSource?.split(",") || [""];
-    instance.data.posterlist = poster?.split(",") || [""];
+    instance.data.playlist = audioSource?.split(",") || [""];
 
     // if source changed
-    if (videoSource !== instance.data.properties?.videoSource) {
+    if (audioSource !== instance.data.properties?.audioSource) {
       instance.data.counter = 0;
       instance.publishState("counter", 0);
     }
@@ -482,15 +253,6 @@ function(instance, context) {
         (item, index) => index === instance.data.counter
     );
 
-    let currentPoster;
-
-    if (use_poster_list) {
-      currentPoster = instance.data.posterlist.find(
-          (item, index) => index === instance.data.counter
-      );
-    } else {
-      currentPoster = instance.data.posterlist[0];
-    }
 
     if (!instance.data.player && !currentSrc) {
       return;
@@ -629,67 +391,6 @@ function(instance, context) {
         };
         instance.publishState("media_type", "html5");
         media_type = 'html5';
-      } else if (
-          url.match(
-              /(http:|https:|)\/\/(player.|www.|home.|fast.)?(wistia\.com|wi\.st|drive\.google\.com|vimeo\.com|youtu(be\.com|\.be|be\.googleapis\.com))\/(video\/|medias\/|embed\/iframe\/|embed\/|file\/d\/|watch\?v=|v\/)?([A-Za-z0-9._%-]*)(\&\S+)?/
-          )
-      ) {
-        if (url.indexOf("youtu") > -1) {
-          ext = "youtube";
-          const id = RegExp.$6;
-
-          const newUrl =
-              "https://youtube.com/embed/" +
-              id +
-              "?origin=" +
-              window.location.protocol +
-              "//" +
-              window.location.host +
-              "";
-          sourceObject = {
-            src: newUrl,
-            type: "video/youtube",
-          };
-
-          instance.publishState("media_type", "youtube");
-          media_type = 'youtube';
-
-        } else if (url.indexOf("vimeo") > -1) {
-          ext = "vimeo";
-          sourceObject = {
-            src: url,
-            type: "video/vimeo",
-          };
-          instance.publishState("media_type", "vimeo");
-          media_type = 'vimeo';
-
-        } else if (RegExp.$3.indexOf("drive.google.com") > -1) {
-          ext = "google";
-          const id = RegExp.$6;
-          const newUrl =
-              "https://drive.google.com/uc?export=download&id=" + id + "";
-
-          if (mime_type) {
-            sourceObject = {
-              src: newUrl,
-              type: mime_type,
-            };
-            instance.publishState("media_type", "html5");
-            media_type = 'html5';
-          } else {
-            instance.publishState("media_type", "unknown");
-            media_type = 'unknown';
-          }
-        } else if (mime_type) {
-          sourceObject = {
-            src: url,
-            type: mime_type,
-          };
-          instance.publishState("media_type", mime_type);
-          media_type = 'html5';
-        } else {
-          media_type = 'html5';
-        }
       } else if (mime_type) {
         sourceObject = {
           src: url,
@@ -705,17 +406,10 @@ function(instance, context) {
       instance.data.ext = ext;
       instance.data.media_type = media_type;
       player.src(sourceObject);
-
     }
 
     instance.data.updatePlugins(properties);
     instance.data.updateOptions(properties);
-
-    if (currentPoster && !currentPoster !== instance.data.currentPoster) {
-      instance.data.currentPoster = currentPoster;
-      instance.data.player?.poster(currentPoster);
-      instance.publishState("current_poster", currentPoster);
-    }
 
     instance.data.properties = properties;
   };
@@ -731,32 +425,19 @@ function(instance, context) {
     instance.publishState("current_time", 0);
     instance.publishState("loadedmetadata", false);
     instance.publishState("loadeddata", false);
-    instance.publishState("video_duration_second", 0);
-    instance.publishState("video_duration_format", "");
+    instance.publishState("audio_duration_second", 0);
+    instance.publishState("audio_duration_format", "");
     instance.publishState("ended", false);
     instance.publishState("playing", false);
     instance.publishState("paused", false);
-    instance.publishState("video_tracks", []);
-    instance.publishState("audio_tracks", []);
-    instance.publishState("text_tracks", []);
-    instance.publishState("last_added_video_track", "");
-    instance.publishState("last_added_audio_track", "");
-    instance.publishState("last_added_text_track", "");
-    instance.publishState("text_track", "");
-    instance.publishState("video_track", "");
-    instance.publishState("audio_track", "");
     instance.publishState("error_type", "");
     instance.publishState("error_message", "");
     instance.publishState("error_message", "");
     instance.publishState("file_extension", "");
-    instance.publishState("current_poster", "");
     instance.publishState("remaining_time_format", "");
     instance.publishState("remaining_time", 0);
     instance.publishState("volume", 0);
     instance.publishState("speed", 0);
-    instance.publishState("fullscreen", false);
-    instance.publishState("video_width", 0);
-    instance.publishState("video_height", 0);
     instance.publishState("player_width", 0);
     instance.publishState("player_width", 0);
     instance.publishState("seeking", false);
@@ -767,10 +448,7 @@ function(instance, context) {
       let {
           autoplay,
           muted,
-          controls,
           loop,
-          fluid,
-          aspectRatio,
           apply_vr
       } = properties;
 
@@ -782,11 +460,6 @@ function(instance, context) {
                 </p></video>`
     );
 
-
-    if (instance.data.currentSrc?.indexOf("vimeo") > -1) {
-      autoplay = autoplay !== 'false';
-    }
-
     if (autoplay === "false") {
       autoplay = false;
     } else if (autoplay === "true") {
@@ -794,7 +467,7 @@ function(instance, context) {
     }
 
     let options = {
-      techOrder: ["html5", "vimeo", "youtube"],
+      techOrder: ["html5"],
       html5: {
         vhs: {
           overrideNative: !videojs.browser.IS_SAFARI,
@@ -805,91 +478,34 @@ function(instance, context) {
         },
         nativeTextTracks: false,
       },
-      youtube: {
-        ytControls: controls ? 2 : 0,
-        controls: controls ? 1 : 0,
-        autoplay: autoplay ? 1 : 0,
-        fs: 1,
-        iv_load_policy: 1, // 3 disables
-        loop: loop ? 1 : 0,
-        modestbranding: 1,
-        playsinline: 1,
-      },
-      vimeo: {
-        color: "#fbc51b",
-        controls,
-      },
       liveui: true,
       preload: "auto",
       autoplay,
-      controls,
+      controls: true,
       muted,
       loop,
       playbackRates: [0.5, 1, 1.5, 2, 4, 8],
       playsinline: true,
-      fluid,
+      fluid: true,
       responsive: true,
     };
-
-    if (aspectRatio) {
-      options.aspectRatio = aspectRatio;
-    }
 
     instance.canvas.append(videoPlayer);
     let player = videojs(playerId, options, function onPlayerReady() {});
 
-    player.univ({
-      shareMenu: false,
-      zoomMenu: false,
-      relatedMenu: false,
-      settingsButton: false,
-      qualityMenu: false,
-      rateMenu: false,
-      buttonRewind: false,
-      buttonForward: false,
-      mirrorButton: false,
-      controlbar: true,
-      androidLock: false,
-      pipButton: true,
-      theaterButton: false,
-      tooltips: false,
-      contextMenu: false,
-      hdicon: false,
-      zoonInfo: false,
-      zoomWheel: false
-    });
 
     instance.data.player = player;
-
-    let audioTracks = player.audioTracks();
-    let videoTracks = player.videoTracks();
-    let textTracks = player.textTracks();
-    textTracks.on("change", function action(event) {
-      instance.data.updateTracks();
-      instance.triggerEvent("text_track_change");
-    });
-    audioTracks.on("change", function action(event) {
-      instance.data.updateTracks();
-      instance.triggerEvent("audio_track_change");
-    });
-    videoTracks.on("change", function action(event) {
-      instance.data.updateTracks();
-      instance.triggerEvent("video_track_change");
-    });
 
     player.on("loadedmetadata", () => {
       if (Number.isFinite(player.duration())) {
         let ftime = instance.data.secondsToTime(player.duration());
-        instance.publishState("video_duration_second", player.duration());
-        instance.publishState("video_duration_format", ftime);
+        instance.publishState("audio_duration_second", player.duration());
+        instance.publishState("audio_duration_format", ftime);
       }
       instance.publishState("loadedmetadata", true);
-      instance.publishState("video_width", player.videoWidth() || 0);
-      instance.publishState("video_height", player.videoHeight() || 0);
       instance.publishState("speed", player.playbackRate() || 1);
       instance.triggerEvent("loaded_meta");
       setTimeout(() => {
-        instance.data.updateTracks();
         instance.data.resizePlayer();
       }, 100);
     });
@@ -905,16 +521,6 @@ function(instance, context) {
       instance.publishState("ended", false);
       instance.publishState("paused", false);
       instance.triggerEvent("play");
-      for (let i = 0; i < audioTracks.length; i++) {
-        const track = audioTracks[i];
-        if (track.enabled) {
-          const audioElement = document.getElementById(track.id);
-          if (audioElement) {
-            audioElement.play();
-          }
-          return;
-        }
-      }
       setTimeout(() => {
           instance.data.resizePlayer();
       }, 100)
@@ -950,8 +556,8 @@ function(instance, context) {
     player.on("timeupdate", function () {
       if (Number.isFinite(player.duration())) {
         let fDuration = instance.data.secondsToTime(player.duration());
-        instance.publishState("video_duration_second", player.duration());
-        instance.publishState("video_duration_format", fDuration);
+        instance.publishState("audio_duration_second", player.duration());
+        instance.publishState("audio_duration_format", fDuration);
       }
       if (Number.isFinite(player.remainingTime())) {
         const remainingSeconds = player.remainingTime();
@@ -986,15 +592,6 @@ function(instance, context) {
       instance.triggerEvent("error");
     });
 
-    player.on("fullscreenchange", function () {
-      if (player.isFullscreen()) {
-        instance.publishState("fullscreen", true);
-        instance.triggerEvent("went_fullscreen");
-      } else {
-        instance.publishState("fullscreen", false);
-        instance.triggerEvent("exit_fullscreen");
-      }
-    });
     player.on("volumechange", function () {
       instance.publishState("volume", player.volume());
       instance.triggerEvent("changed_volume");
@@ -1003,11 +600,6 @@ function(instance, context) {
     player.on("ratechange", function () {
       instance.publishState("speed", player.playbackRate());
       instance.triggerEvent("ratechange");
-    });
-
-    player.on("resize", function () {
-      instance.triggerEvent("resize");
-      instance.data.resizePlayer();
     });
 
     player.on("playerresize", function () {
