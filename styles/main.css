@@ -1,0 +1,5 @@
+.vjs-playback-rate > .vjs-menu-button, .vjs-playback-rate .vjs-playback-rate-value {
+    top: 50%!important;
+    transform: translate(0, -50%)!important;
+    height: auto!important;
+}

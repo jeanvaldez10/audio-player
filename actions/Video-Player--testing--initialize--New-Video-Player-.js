@@ -33,16 +33,19 @@ function(instance, context) {
       parent.css("height", height);
       parent.css("max-height", "fit-content");
       parent.css("min-height", "fit-content");
+      parent.css("overflow", 'visible');
       const grandParent = parent.parent(".bubble-r-line");
       if (grandParent.length) {
         grandParent.css("height", height);
         grandParent.css("max-height", "fit-content");
         grandParent.css("min-height", "fit-content");
+        grandParent.css("overflow", 'visible');
       }
     }
     instance.canvas.css("height", height);
     instance.canvas.css("max-height", "fit-content");
     instance.canvas.css("min-height", "fit-content");
+    instance.canvas.css("overflow", 'visible');
   };
 
   instance.data.forwardRewind = (delta) => {
