@@ -3,3 +3,12 @@
     transform: translate(0, -50%)!important;
     height: auto!important;
 }
+
+.video-js .vjs-current-time, .vjs-time-divider, .video-js .vjs-duration  {
+    display: none!important;
+}
+
+.vjs-wavedisplay {
+    min-width: 100%;
+    min-height: 100%;
+}

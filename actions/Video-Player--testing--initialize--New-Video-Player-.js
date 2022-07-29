@@ -103,6 +103,8 @@ function(instance, context) {
       barColor,
       override_style,
       css_skin_file,
+      apply_waveform,
+      waveformContainer,
     } =properties;
     try {
       player.controls(true);
@@ -110,7 +112,6 @@ function(instance, context) {
       player.volume(volume || 0);
       player.muted(muted);
       player.playbackRate(speed || 1);
-      player.audioOnlyMode(true);
       player.fluid(true);
 
       if (forcePause) {
@@ -121,6 +122,15 @@ function(instance, context) {
     } catch (e) {
       console.log(e);
     }
+
+    setTimeout(() => {
+      if (apply_waveform && !waveformContainer) {
+        player.audioOnlyMode(false);
+      } else {
+        player.audioOnlyMode(true);
+      }
+    }, 10)
+
     const videoContainer = document.getElementById(instance.data.playerId);
 
     videoContainer.classList.remove("vjs-theme-base");
@@ -256,10 +266,6 @@ function(instance, context) {
         (item, index) => index === instance.data.counter
     );
 
-
-    if (!instance.data.player && !currentSrc) {
-      return;
-    }
     if (currentSrc !== instance.data.currentSrc) {
       instance.data.currentSrc = currentSrc;
       let video_url = currentSrc
@@ -452,7 +458,8 @@ function(instance, context) {
           autoplay,
           muted,
           loop,
-          apply_vr
+          apply_vr,
+          apply_waveform,
       } = properties;
 
       const videoPlayer = $(
@@ -492,6 +499,41 @@ function(instance, context) {
       fluid: true,
       responsive: true,
     };
+
+    if (apply_waveform) {
+      const {
+        waveColor = '#999999',
+        waveformContainer,
+        progressColor = '#555555',
+        cursorColor = '#333333',
+        hideScrollbar = true,
+        scrollParent = false,
+        barWidth,
+        barHeight = 1,
+      } = properties;
+      options.plugins = {
+        // enable videojs-wavesurfer plugin
+        wavesurfer: {
+          // configure videojs-wavesurfer
+          backend: 'MediaElement',
+          debug: true,
+          displayMilliseconds: true,
+          waveColor,
+          progressColor,
+          cursorColor,
+          hideScrollbar,
+          fillParent: true,
+          scrollParent,
+          barHeight,
+        }
+      };
+      if (waveformContainer) {
+        options.plugins.wavesurfer.container = `#${waveformContainer}`
+      }
+      if (barWidth) {
+        options.plugins.wavesurfer.barWidth = barWidth;
+      }
+    }
 
     instance.canvas.append(videoPlayer);
     let player = videojs(playerId, options, function onPlayerReady() {});
